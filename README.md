@@ -1,19 +1,10 @@
-# advent-of-code-template
+# Advent of Code 2025
 
-Template repo for playing [Advent of Code](https://adventofcode.com) in python.
+Repo built from my [Aoc python template repo](https://github.com/alisonrclarke/advent-of-code-template), for [Advent of Code](https://adventofcode.com) 2025.
 
 Includes a script to set up a script and empty input files for each day, plus some simple utility functions to help parse input files.
 
 The utility functions were inspired by a blog post at https://www.keiruaprod.fr/blog/2021/11/23/getting-ready-for-adventofcode-in-python.html.
-
-Note that this is a fairly minimal repo; if you're looking for something a bit more sophisticated that will read or post answers to the AoC website for you then take a look at this list of [project templates](https://github.com/Bogdanp/awesome-advent-of-code/#project-templates) on https://github.com/Bogdanp/awesome-advent-of-code.
-
-
-## How to create your repository
-
-From https://github.com/alisonrclarke/advent-of-code-template, click on 'Use this template' and select 'Create new repository'. GitHub will then create a new repo for you based on this template. (Alternatively you could try opening it in a Codespace.)
-
-For more details see the [Github docs](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template#creating-a-repository-from-a-template)
 
 ## Prerequisites
 
