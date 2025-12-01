@@ -8,7 +8,7 @@ The utility functions were inspired by a blog post at https://www.keiruaprod.fr/
 
 ## Prerequisites
 
-Make sure you have python3 installed. If your defauly python is python2, replace `python` with `python3` in the commands below.
+Make sure you have python3 installed. If your default python is python2, replace `python` with `python3` in the commands below.
 
 ## How to set up for a new day
 
