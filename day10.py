@@ -1,7 +1,8 @@
 import itertools
 import re
 import sys
-from functools import reduce
+from collections import defaultdict
+from functools import reduce, cache
 from operator import ior
 
 import utils
@@ -38,10 +39,9 @@ def find_target(target: int, buttons: list[int]) -> int:
                     visited[next_val] = val
                     q.append(next_val)
 
-    breakpoint()
-
 
 part1 = 0
+
 for line in data:
     m = re.match(r"\[([\.#]+)\] (.+) \{([\d,]+)\}", line)
 
@@ -66,3 +66,82 @@ for line in data:
     part1 += find_target(target, buttons)
 
 print(f"Part 1: {part1}")
+
+
+# part 2: Re-parse data to get joltages
+# Algorithm based on https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
+# and https://aoc.winslowjosiah.com/solutions/2025/day/10/
+# Use patterns of odd/even numbers and recurse
+
+
+def get_valid_patterns(buttons: list[set[int]]) -> dict[list[set[int]], list[set[int]]]:
+    patterns = defaultdict(list)
+
+    # Get all possible combinations of button presses (1 press per button)
+    # Include 0 presses here too, so we have a no-op option
+    for n_presses in range(len(buttons) + 1):
+        for presses in itertools.combinations(buttons, n_presses):
+            pattern = set()
+            for button in presses:
+                pattern ^= button
+
+            patterns[frozenset(pattern)].append(presses)
+
+    return patterns
+
+
+part2 = 0
+
+for line in data:
+    m = re.match(r"\[([\.#]+)\] (.+) \{([\d,]+)\}", line)
+
+    joltages = tuple(int(i) for i in m.group(3).split(","))
+
+    buttons = []
+    # Use sets for buttons - can use XOR on sets to toggle values
+    for bs in m.group(2).split():
+        b = set(int(i) for i in bs.lstrip("(").rstrip(")").split(","))
+        buttons.append(b)
+
+    valid_patterns = get_valid_patterns(buttons)
+
+    @cache
+    def get_min_presses(target_joltage: tuple[int]) -> int | None:
+        # Calculate min number of presses to get to the target
+        if all(j == 0 for j in target_joltage):
+            return 0
+
+        # Work out which lights need an odd number of presses - how do we get to that?
+        odd_lights = frozenset(i for i, j in enumerate(target_joltage) if j % 2 == 1)
+
+        result = None
+
+        for presses in valid_patterns[odd_lights]:
+            # For each button sequence that can get us to the odd_lights pattern, press it and reduce the needed joltage
+            next_target = list(target_joltage)
+            for button in presses:
+                for joltage_index in button:
+                    next_target[joltage_index] -= 1
+
+            # If we got to a negative target, continue as this sequence is no good
+            if any(j < 0 for j in next_target):
+                continue
+
+            # Should now have even values in next_target, so we can divide and conquer...
+            half_target = tuple(t // 2 for t in next_target)
+            half_min_presses = get_min_presses(half_target)
+            if half_min_presses is None:
+                continue
+
+            # If we get to half target, then repeat, we reach next_target, then add on the number of presses we've just done
+            n_presses = (half_min_presses * 2) + len(presses)
+
+            result = min(n_presses, result) if result is not None else n_presses
+
+        return result
+
+    min_presses = get_min_presses(joltages)
+    if min_presses is not None:
+        part2 += min_presses
+
+print(f"Part 2: {part2}")
